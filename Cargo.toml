@@ -1,0 +1,38 @@
+[package]
+name = "callback-data"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Flat, compile-time-checked callback_data (de)serialization for Telegram bots, aiogram-CallbackData-style"
+license.workspace = true
+
+[workspace]
+resolver = "3"
+members = ["derive"]
+
+    [workspace.package]
+    version = "0.1.0"
+    edition = "2024"
+    rust-version = "1.90"
+    license = "Unlicense"
+
+[dependencies]
+callback-data-derive = { path = "derive", version = "0.1.0" }
+thiserror = "2.0"
+
+# only for the `merge` feature (fields!/merge/merge_to via serde_json)
+serde = {
+    version = "1.0",
+    default-features = false,
+    features = ["derive"],
+    optional = true
+}
+serde_json = { version = "1.0", default-features = false, optional = true }
+
+# only for the `telers` feature
+telers = { version = "1.0.0-beta.8", default-features = false, optional = true }
+
+[features]
+default = []
+merge = ["dep:serde", "dep:serde_json"]
+telers = ["dep:telers"]

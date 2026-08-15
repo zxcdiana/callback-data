@@ -1,0 +1,16 @@
+[package]
+name = "callback-data-derive"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Proc-macro derives for the callback-data crate"
+license.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+darling = "0.24"
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "3.0", features = ["full"] }
