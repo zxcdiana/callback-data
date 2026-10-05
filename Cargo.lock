@@ -69,7 +69,7 @@ checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
 name = "callback-data"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "callback-data-derive",
  "serde",
@@ -80,7 +80,7 @@ dependencies = [
 
 [[package]]
 name = "callback-data-derive"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "darling",
  "proc-macro2",
