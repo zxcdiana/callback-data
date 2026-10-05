@@ -10,29 +10,22 @@ license.workspace = true
 resolver = "3"
 members = ["derive"]
 
-    [workspace.package]
-    version = "0.2.0"
-    edition = "2024"
-    rust-version = "1.90"
-    license = "Unlicense"
+[workspace.package]
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.90"
+license = "Unlicense"
 
 [dependencies]
 callback-data-derive = { path = "derive", version = "0.2.0" }
 thiserror = "2.0"
 
 # only for the `merge` feature (fields!/merge/merge_to via serde_json)
-serde = {
-    version = "1.0",
-    default-features = false,
-    features = ["derive"],
-    optional = true
-}
+serde = { version = "1.0", default-features = false, features = ["derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, optional = true }
 
 # only for the `telers` feature
-telers = {     version = "1.0.0-beta.9",
-    git = "https://github.com/Desiders/telers.git",
-    rev = "1741289171ef1f857363d74251028040d9616f11", default-features = false, optional = true }
+telers = { git = "https://github.com/Desiders/telers.git", rev = "1741289171ef1f857363d74251028040d9616f11", version = "1.0.0-beta.9", default-features = false, optional = true }
 
 [features]
 default = []
