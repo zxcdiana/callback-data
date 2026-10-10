@@ -25,7 +25,7 @@ serde = { version = "1.0", default-features = false, features = ["derive"], opti
 serde_json = { version = "1.0", default-features = false, optional = true }
 
 # only for the `telers` feature
-telers = { git = "https://github.com/Desiders/telers.git", rev = "1741289171ef1f857363d74251028040d9616f11", version = "1.0.0-beta.9", default-features = false, optional = true }
+telers = { git = "https://github.com/Desiders/telers.git", rev = "46825063fc851ff7c904cfb7e6a4320a664cf926", version = "1.0.0-beta.9", default-features = false, optional = true }
 
 [features]
 default = []

@@ -837,7 +837,7 @@ checksum = "20f34339676cdcab560c9a82300c4c2581f68b9369aedf0fae86f2ff9565ff3e"
 [[package]]
 name = "telers"
 version = "1.0.0-beta.9"
-source = "git+https://github.com/Desiders/telers.git?rev=1741289171ef1f857363d74251028040d9616f11#1741289171ef1f857363d74251028040d9616f11"
+source = "git+https://github.com/Desiders/telers.git?rev=46825063fc851ff7c904cfb7e6a4320a664cf926#46825063fc851ff7c904cfb7e6a4320a664cf926"
 dependencies = [
  "anyhow",
  "backoff",
@@ -864,7 +864,7 @@ dependencies = [
 [[package]]
 name = "telers-macros"
 version = "1.0.0-beta.2"
-source = "git+https://github.com/Desiders/telers.git?rev=1741289171ef1f857363d74251028040d9616f11#1741289171ef1f857363d74251028040d9616f11"
+source = "git+https://github.com/Desiders/telers.git?rev=46825063fc851ff7c904cfb7e6a4320a664cf926#46825063fc851ff7c904cfb7e6a4320a664cf926"
 dependencies = [
  "heck",
  "proc-macro2",
