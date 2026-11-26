@@ -90,11 +90,11 @@ impl<T: Default + Serialize + DeserializeOwned> MergeFrom for T {}
 #[macro_export]
 macro_rules! fields {
     ($($key:ident : $value:expr),* $(,)?) => {{
-        let mut map = $crate::__private::serde_json::Map::new();
+        let mut map = $crate::serde_json::Map::new();
         $(
             map.insert(
                 stringify!($key).to_owned(),
-                $crate::__private::serde_json::to_value($value).unwrap(),
+                $crate::serde_json::to_value($value).unwrap(),
             );
         )*
         map

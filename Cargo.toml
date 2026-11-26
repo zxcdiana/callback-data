@@ -16,18 +16,30 @@ edition = "2024"
 rust-version = "1.90"
 license = "Unlicense"
 
+[workspace.dependencies]
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+telers = { version = "1.0.0-beta.10", default-features = false }
+
 [dependencies]
-callback-data-derive = { path = "derive", version = "0.5.0" }
-thiserror = "2.0"
+callback-data-derive = { path = "derive" }
 
 # only for the `merge` feature (fields!/merge/merge_to via serde_json)
 serde = { version = "1.0", default-features = false, features = ["derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, optional = true }
 
 # only for the `telers` feature
-telers = { version = "1.0.0-beta.10", default-features = false, optional = true }
+telers = { workspace = true, optional = true }
+
+base62 = { version = "2", default-features = false, features = ["alloc"] }
+chrono = { workspace = true, optional = true }
+thiserror = { version = "2.0", default-features = false }
+
+[dev-dependencies]
+chrono.workspace = true
+telers = { workspace = true, features = ["serde"] }
 
 [features]
 default = []
+chrono = ["dep:chrono"]
 merge = ["dep:serde", "dep:serde_json"]
 telers = ["dep:telers"]

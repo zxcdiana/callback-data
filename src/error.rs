@@ -57,4 +57,47 @@ pub enum UnpackError {
 
     #[error("invalid Option marker token `{token}`")]
     InvalidOptionMarker { token: String },
+
+    #[cfg(feature = "chrono")]
+    #[error("chrono error: {0:?}")]
+    Chrono(ChronoError),
+}
+
+#[cfg(feature = "chrono")]
+#[derive(Debug, Error)]
+pub enum ChronoError {
+    #[error("invalid timestamp `{0}`")]
+    InvalidTimestamp(i64),
+    #[error("invalid num seconds from midnight `{0}`")]
+    InvalidTime(u32),
+    #[error("invalid num days from ce `{0}`")]
+    InvalidDate(i32),
+}
+
+#[cfg(feature = "chrono")]
+impl<T> From<T> for UnpackError
+where
+    T: Into<ChronoError>,
+{
+    fn from(value: T) -> Self {
+        value.into().into()
+    }
+}
+
+#[derive(Clone, Copy)]
+pub(crate) struct Mapper<'a> {
+    pub token: &'a str,
+    pub type_name: &'static str,
+}
+impl<'a> Mapper<'a> {
+    pub fn new(token: &'a str, type_name: &'static str) -> Mapper<'a> {
+        Self { token, type_name }
+    }
+    pub fn err(&self, err: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> UnpackError {
+        UnpackError::ParseFailed {
+            token: self.token.into(),
+            ty: self.type_name,
+            source: err.into(),
+        }
+    }
 }

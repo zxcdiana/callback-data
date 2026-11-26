@@ -29,12 +29,6 @@ mod callback_data;
 mod error;
 mod flat_field;
 
-#[cfg(feature = "merge")]
-mod merge;
-
-#[cfg(feature = "telers")]
-mod telers_support;
-
 pub use callback_data::{CallbackDataConfig, CallbackDataTrait};
 pub use error::{PackError, UnpackError};
 pub use flat_field::FlatField;
@@ -54,18 +48,27 @@ pub use callback_data_derive::callback_data;
 pub use callback_data_derive::FlatField;
 
 #[cfg(feature = "merge")]
+mod merge;
+#[cfg(feature = "merge")]
 pub use merge::{MergeError, MergeFrom, MergeTo, merge};
+#[cfg(feature = "merge")]
+pub extern crate serde;
+#[cfg(feature = "merge")]
+pub extern crate serde_json;
 
+#[cfg(feature = "telers")]
+mod telers_support;
+#[cfg(feature = "telers")]
+pub extern crate telers;
 #[cfg(feature = "telers")]
 pub use telers_support::{
     CallbackDataButtonExt, CallbackDataFilter, OWNER_ID_CONTEXT_KEY, as_filter,
     try_unpack_from_update,
 };
 
-// Used internally by the `fields!` macro so callers don't need `serde_json`
-// as a direct dependency themselves.
-#[cfg(feature = "merge")]
-#[doc(hidden)]
-pub mod __private {
-    pub use serde_json;
-}
+#[cfg(feature = "chrono")]
+mod chrono_support;
+#[cfg(feature = "chrono")]
+pub use error::ChronoError;
+#[cfg(feature = "chrono")]
+pub extern crate chrono;

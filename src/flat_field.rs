@@ -1,7 +1,7 @@
+use crate::error::{Mapper, NONE_MARKER, PackError, SEP, SOME_MARKER, UnpackError};
+use std::any::type_name;
 use std::str::FromStr;
 use std::vec::IntoIter;
-
-use crate::error::{NONE_MARKER, PackError, SEP, SOME_MARKER, UnpackError};
 
 /// Internal trait implemented for every type that can be packed into a fixed
 /// number of `:`-separated tokens.
@@ -40,7 +40,10 @@ fn validate_token(value: String) -> Result<String, PackError> {
     Ok(value)
 }
 
-fn next_token(tokens: &mut IntoIter<String>, field: &'static str) -> Result<String, UnpackError> {
+pub(crate) fn next_token(
+    tokens: &mut IntoIter<String>,
+    field: &'static str,
+) -> Result<String, UnpackError> {
     tokens.next().ok_or(UnpackError::NotEnoughTokens { field })
 }
 
@@ -78,10 +81,133 @@ macro_rules! impl_flat_field_display {
 }
 
 impl_flat_field_display! {
-    u8 => "u8", u16 => "u16", u32 => "u32", u64 => "u64", u128 => "u128", usize => "usize",
-    i8 => "i8", i16 => "i16", i32 => "i32", i64 => "i64", i128 => "i128", isize => "isize",
     f32 => "f32", f64 => "f64",
 }
+
+macro_rules! abs {
+    (i8, $v:expr) => {
+        ($v).abs()
+    };
+    (i16, $v:expr) => {
+        ($v).abs()
+    };
+    (i32, $v:expr) => {
+        ($v).abs()
+    };
+    (i64, $v:expr) => {
+        ($v).abs()
+    };
+    (i128, $v:expr) => {
+        ($v).abs()
+    };
+    (isize, $v:expr) => {
+        ($v).abs()
+    };
+
+    ($ty:ty, $v:expr) => {
+        $v
+    };
+}
+
+macro_rules! neg {
+    (i8, $v:expr) => {
+        Result::<i8, UnpackError>::Ok(-($v))
+    };
+    (i16, $v:expr) => {
+        Result::<i16, UnpackError>::Ok(-($v))
+    };
+    (i32, $v:expr) => {
+        Result::<i32, UnpackError>::Ok(-($v))
+    };
+    (i64, $v:expr) => {
+        Result::<i64, UnpackError>::Ok(-($v))
+    };
+    (i128, $v:expr) => {
+        Result::<i128, UnpackError>::Ok(-($v))
+    };
+    (isize, $v:expr) => {
+        Result::<isize, UnpackError>::Ok(-($v))
+    };
+
+    ($ty:ty, $v:expr) => {
+        Result::<$ty, UnpackError>::Err(
+            Mapper::new(&($v).to_string(), type_name::<$ty>())
+                .err("cannot convert {$ty} `{$v}` to negative"),
+        )
+    };
+}
+
+macro_rules! impl_integer {
+    ($ty:ty) => {
+        impl FlatField for $ty {
+            const TOKEN_COUNT: usize = 1;
+
+            fn pack_into(&self, out: &mut Vec<String>) -> Result<(), PackError> {
+                let mut num = *self;
+                #[allow(unused_comparisons)]
+                let negative = num < 0;
+
+                if negative {
+                    #[allow(clippy::self_assignment)]
+                    {
+                        num = abs!(Self, num);
+                    }
+                }
+
+                let part = u128::try_from(num)
+                    .ok()
+                    .map(base62::encode)
+                    .map(|mut encoded| {
+                        if negative {
+                            unsafe {
+                                encoded.as_mut_vec().insert(0, b'-');
+                            }
+                        }
+                        encoded
+                    })
+                    .unwrap_or_else(|| self.to_string());
+
+                out.push(part);
+
+                Ok(())
+            }
+
+            fn unpack_from(tokens: &mut IntoIter<String>) -> Result<Self, UnpackError> {
+                let t = next_token(tokens, type_name::<Self>())?;
+
+                Self::from_str(&t).or_else(|_| {
+                    let m = Mapper::new(&t, type_name::<Self>());
+                    let negative = t.starts_with('-');
+                    let num = t.strip_prefix('-').unwrap_or(&t);
+
+                    base62::decode(num)
+                        .map_err(|e| m.err(e))
+                        .and_then(|decoded: u128| Self::try_from(decoded).map_err(|e| m.err(e)))
+                        .and_then(|converted: Self| {
+                            if negative {
+                                neg!(Self, converted)
+                            } else {
+                                Ok(converted)
+                            }
+                        })
+                })
+            }
+        }
+    };
+}
+
+impl_integer!(i8);
+impl_integer!(i16);
+impl_integer!(i32);
+impl_integer!(i64);
+impl_integer!(i128);
+impl_integer!(isize);
+impl_integer!(u8);
+impl_integer!(u16);
+impl_integer!(u32);
+impl_integer!(u64);
+impl_integer!(u128);
+impl_integer!(usize);
 
 impl FlatField for bool {
     const TOKEN_COUNT: usize = 1;
